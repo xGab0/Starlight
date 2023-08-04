@@ -95,17 +95,17 @@ public final class SaveUtil {
                     // to try and maintain compatibility with a broken and inferior skylight management system.
 
                     if (blockNibble != null) {
-                        if (blockNibble.data != null) {
-                            section.putByteArray("BlockLight", blockNibble.data);
+                        if (blockNibble.data() != null) {
+                            section.putByteArray("BlockLight", blockNibble.data());
                         }
-                        section.putInt(BLOCKLIGHT_STATE_TAG, blockNibble.state);
+                        section.putInt(BLOCKLIGHT_STATE_TAG, blockNibble.state());
                     }
 
                     if (skyNibble != null) {
-                        if (skyNibble.data != null) {
-                            section.putByteArray("SkyLight", skyNibble.data);
+                        if (skyNibble.data() != null) {
+                            section.putByteArray("SkyLight", skyNibble.data());
                         }
-                        section.putInt(SKYLIGHT_STATE_TAG, skyNibble.state);
+                        section.putInt(SKYLIGHT_STATE_TAG, skyNibble.state());
                     }
                 }
             }

@@ -114,9 +114,7 @@ public abstract class ThreadedLevelLightEngineMixin extends LevelLightEngine imp
     @Overwrite
     public void checkBlock(final BlockPos pos) {
         final BlockPos posCopy = pos.immutable();
-        this.queueTaskForSection(posCopy.getX() >> 4, posCopy.getY() >> 4, posCopy.getZ() >> 4, () -> {
-            return this.getLightEngine().blockChange(posCopy);
-        });
+        this.queueTaskForSection(posCopy.getX() >> 4, posCopy.getY() >> 4, posCopy.getZ() >> 4, () -> this.getLightEngine().blockChange(posCopy));
     }
 
     /**
@@ -134,9 +132,7 @@ public abstract class ThreadedLevelLightEngineMixin extends LevelLightEngine imp
      */
     @Overwrite
     public void updateSectionStatus(final SectionPos pos, final boolean notReady) {
-        this.queueTaskForSection(pos.getX(), pos.getY(), pos.getZ(), () -> {
-            return this.getLightEngine().sectionChange(pos, notReady);
-        });
+        this.queueTaskForSection(pos.getX(), pos.getY(), pos.getZ(), () -> this.getLightEngine().sectionChange(pos, notReady));
     }
 
     /**

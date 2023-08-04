@@ -87,23 +87,17 @@ public final class SWMRNibbleArray {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("State: ");
-        switch (this.stateVisible) {
-            case INIT_STATE_NULL:
-                stringBuilder.append("null");
-                break;
-            case INIT_STATE_UNINIT:
-                stringBuilder.append("uninitialised");
-                break;
-            case INIT_STATE_INIT:
-                stringBuilder.append("initialised");
-                break;
-            case INIT_STATE_HIDDEN:
-                stringBuilder.append("hidden");
-                break;
-            default:
-                stringBuilder.append("unknown");
-                break;
-        }
+
+        stringBuilder.append(
+                switch(this.stateVisible) {
+                    case INIT_STATE_NULL -> "null";
+                    case INIT_STATE_UNINIT -> "uninitialised";
+                    case INIT_STATE_INIT -> "initialised";
+                    case INIT_STATE_HIDDEN -> "hidden";
+                    default -> "unknown";
+                }
+        );
+
         stringBuilder.append("\nData:\n");
 
         final byte[] data = this.storageVisible;
@@ -357,17 +351,12 @@ public final class SWMRNibbleArray {
     // operation type: visible
     public DataLayer toVanillaNibble() {
         synchronized (this) {
-            switch (this.stateVisible) {
-                case INIT_STATE_HIDDEN:
-                case INIT_STATE_NULL:
-                    return null;
-                case INIT_STATE_UNINIT:
-                    return new DataLayer();
-                case INIT_STATE_INIT:
-                    return new DataLayer(this.storageVisible.clone());
-                default:
-                    throw new IllegalStateException();
-            }
+            return switch (this.stateVisible) {
+                case INIT_STATE_HIDDEN, INIT_STATE_NULL -> null;
+                case INIT_STATE_UNINIT -> new DataLayer();
+                case INIT_STATE_INIT -> new DataLayer(this.storageVisible.clone());
+                default -> throw new IllegalStateException();
+            };
         }
     }
 
@@ -427,14 +416,6 @@ public final class SWMRNibbleArray {
         this.storageUpdating[i] = (byte)((this.storageUpdating[i] & (0xF0 >>> shift)) | (value << shift));
     }
 
-    public static final class SaveState {
-
-        public final byte[] data;
-        public final int state;
-
-        public SaveState(final byte[] data, final int state) {
-            this.data = data;
-            this.state = state;
-        }
+    public record SaveState(byte[] data, int state) {
     }
 }

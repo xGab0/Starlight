@@ -466,8 +466,10 @@ public final class SkyStarLightEngine extends StarLightEngine {
         final LevelChunkSection[] sections = chunk.getSections();
 
         int highestNonEmptySection = this.maxSection;
-        while (highestNonEmptySection == (this.minSection - 1) ||
-                sections[highestNonEmptySection - this.minSection] == null || sections[highestNonEmptySection - this.minSection].hasOnlyAir()) {
+        while (highestNonEmptySection == (this.minSection - 1)
+               || sections[highestNonEmptySection - this.minSection] == null
+               || sections[highestNonEmptySection - this.minSection].hasOnlyAir())
+        {
             this.checkNullSection(chunkX, highestNonEmptySection, chunkZ, false);
             // try propagate FULL to neighbours
 

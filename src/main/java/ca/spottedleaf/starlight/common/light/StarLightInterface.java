@@ -567,13 +567,10 @@ public final class StarLightInterface {
         }
     }
 
-    protected static final class LightQueue {
-
-        protected final Long2ObjectLinkedOpenHashMap<ChunkTasks> chunkTasks = new Long2ObjectLinkedOpenHashMap<>();
-        protected final StarLightInterface manager;
+    protected record LightQueue(Long2ObjectLinkedOpenHashMap<ChunkTasks> chunkTasks, StarLightInterface manager) {
 
         public LightQueue(final StarLightInterface manager) {
-            this.manager = manager;
+            this(new Long2ObjectLinkedOpenHashMap<>(), manager);
         }
 
         public synchronized boolean isEmpty() {
@@ -592,13 +589,14 @@ public final class StarLightInterface {
             if (tasks.changedSectionSet == null) {
                 tasks.changedSectionSet = new Boolean[this.manager.maxSection - this.manager.minSection + 1];
             }
-            tasks.changedSectionSet[pos.getY() - this.manager.minSection] = Boolean.valueOf(newEmptyValue);
+            tasks.changedSectionSet[pos.getY() - this.manager.minSection] = newEmptyValue;
 
             return tasks.onComplete;
         }
 
         public synchronized CompletableFuture<Void> queueChunkLighting(final ChunkPos pos, final Runnable lightTask) {
             final ChunkTasks tasks = this.chunkTasks.computeIfAbsent(CoordinateUtils.getChunkKey(pos), ChunkTasks::new);
+
             if (tasks.lightTasks == null) {
                 tasks.lightTasks = new ArrayList<>();
             }
@@ -633,19 +631,20 @@ public final class StarLightInterface {
 
         public void removeChunk(final ChunkPos pos) {
             final ChunkTasks tasks;
+
             synchronized (this) {
                 tasks = this.chunkTasks.remove(CoordinateUtils.getChunkKey(pos));
             }
+
             if (tasks != null) {
                 tasks.onComplete.complete(null);
             }
         }
-
+        
         public synchronized ChunkTasks removeFirstTask() {
-            if (this.chunkTasks.isEmpty()) {
-                return null;
-            }
-            return this.chunkTasks.removeFirst();
+            return this.chunkTasks.isEmpty()
+                ? null
+                : this.chunkTasks.removeFirst();
         }
 
         protected static final class ChunkTasks {
